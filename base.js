@@ -15,6 +15,9 @@ GameState.prototype.preload = function() {
 
 // Setup the example
 GameState.prototype.create = function() {
+    // Enable FPS counter
+    this.game.time.advancedTiming = true;
+
     // Set stage background color
     this.game.stage.backgroundColor = 0x333333;
 
@@ -126,6 +129,9 @@ GameState.prototype.resetShip = function() {
 
 // The update() method is called every frame
 GameState.prototype.update = function() {
+    // FPS counter update
+    this.game.debug.text(this.game.time.fps, 2, 14, "#00ff00");
+
     // Collide the ship with the ground
     this.game.physics.arcade.collide(this.ship, this.ground);
 
