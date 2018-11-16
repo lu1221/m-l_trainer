@@ -1,0 +1,25 @@
+{
+  "name": "m-l_trainer",
+  "version": "1.0.0",
+  "description": "This is a node package containing source codes of a moonlanding trainer using genetic algorithm.",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run lite",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lite": "lite-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lu1221/m-l_trainer.git"
+  },
+  "author": "Erfan Yahya, Shangcheng Lu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lu1221/m-l_trainer/issues"
+  },
+  "homepage": "https://github.com/lu1221/m-l_trainer#readme",
+  "devDependencies": {
+    "lite-server": "^2.4.0",
+    "phaser": "^2.2.2"
+  }
+}
