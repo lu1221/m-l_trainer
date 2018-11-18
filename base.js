@@ -3,6 +3,12 @@
 // Copyright © 2014 John Watson
 // Licensed under the terms of the MIT License
 
+
+
+//GLOBAL VARIABLES
+var DISABLE_ROTATION = 1; // DISABLES ROTATION OF ROCKET
+var ENABLE_DEBUG_MSGS = 1; // ENABLES DEBUG MESSAGES
+
 var GameState = function(game) {
 };
 
@@ -22,7 +28,11 @@ GameState.prototype.create = function() {
     this.game.stage.backgroundColor = 0x333333;
 
     // Define motion constants
-    this.ROTATION_SPEED = 180; // degrees/second
+    if(DISABLE_ROTATION)
+      this.ROTATION_SPEED = 0; // degrees/second
+    else{
+      this.ROTATION_SPEED = 180; // degrees/second
+    }
     this.ACCELERATION = 200; // pixels/second/second
     this.MAX_SPEED = 250; // pixels/second
     this.DRAG = 0; // pixels/second
@@ -132,6 +142,11 @@ GameState.prototype.update = function() {
     // FPS counter update
     this.game.debug.text(this.game.time.fps, 2, 14, "#00ff00");
 
+    if(ENABLE_DEBUG_MSGS){
+      this.game.debug.text("Y = " + Number(this.ship.y).toFixed(2), 2, 34, "#00ff00");
+      this.game.debug.text("Velocity = " + Number(this.ship.body.velocity.y).toFixed(2), 2, 54, "#00ff00");
+    }
+
     // Collide the ship with the ground
     this.game.physics.arcade.collide(this.ship, this.ground);
 
@@ -167,6 +182,13 @@ GameState.prototype.update = function() {
             this.ship.angle = -90;
         }
 
+    }
+
+    if(this.ship.y < 0) {
+      // The ship hit the 'ceiling'
+      // Blow it up and start the game over.
+      this.getExplosion(this.ship.x, this.ship.y);
+      this.resetShip();
     }
 
     if (this.upInputIsActive()) {
