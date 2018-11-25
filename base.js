@@ -10,6 +10,13 @@ var DISABLE_ROTATION = 1; // DISABLES ROTATION OF ROCKET
 var ENABLE_DEBUG_MSGS = 1; // ENABLES DEBUG MESSAGES
 
 var GameState = function(game) {
+
+    // Define feature as state member variables
+    this.Y = 0;
+    this.acceleration = 0;
+    this.velocity = 0;
+    this.explode = 0;
+
 };
 
 // Load images and sounds
@@ -139,12 +146,17 @@ GameState.prototype.resetShip = function() {
 
 // The update() method is called every frame
 GameState.prototype.update = function() {
-    // FPS counter update
-    this.game.debug.text(this.game.time.fps, 2, 14, "#00ff00");
 
+    // Feature values display at the top-left corner on screen 
     if(ENABLE_DEBUG_MSGS){
+      this.game.debug.text(this.game.time.fps, 2, 14, "#00ff00");
       this.game.debug.text("Y = " + Number(this.ship.y).toFixed(2), 2, 34, "#00ff00");
       this.game.debug.text("Velocity = " + Number(this.ship.body.velocity.y).toFixed(2), 2, 54, "#00ff00");
+      
+      // Keeping track of feature values
+      this.Y = this.ship.y.toFixed(2);
+      this.acceleration = this.ship.body.acceleration;
+      this.velocity = this.ship.body.velocity.y.toFixed(2);
     }
 
     // Collide the ship with the ground
@@ -173,7 +185,13 @@ GameState.prototype.update = function() {
             // The ship hit the ground too hard.
             // Blow it up and start the game over.
             this.getExplosion(this.ship.x, this.ship.y);
+            
+            // Explosion triggers an event termination signal and 
+            // at the same time we log and pass over feature values
+            // to render() function where we stop the game
             this.resetShip();
+            this.explode = 1;
+            
         } else {
             // We've landed!
             // Stop rotating and moving and aim the ship up.
@@ -188,7 +206,10 @@ GameState.prototype.update = function() {
       // The ship hit the 'ceiling'
       // Blow it up and start the game over.
       this.getExplosion(this.ship.x, this.ship.y);
+      
+      // Same idea as when we hit the ground
       this.resetShip();
+      this.explode = 1;
     }
 
     if (this.upInputIsActive()) {
@@ -206,6 +227,29 @@ GameState.prototype.update = function() {
         // Show the frame from the spritesheet with the engine off
         this.ship.frame = 0;
     }
+};
+
+// Try overloading the render function
+GameState.prototype.render = function() {
+
+    // When we receive the explode signal we stop the game
+    // exit and return to the calling function with fitness score
+    if (1 == this.explode) {
+
+        console.log(this.Y);
+        console.log(this.acceleration);
+        console.log(this.velocity);
+        console.log(this.explode);
+        this.explode = 0;
+
+        // DEBUG
+        // Stop game when ship explodes
+        // function StopGame(){ Error.apply(this, arguments); this.name = "StopGame";  }
+        // StopGame.prototype = Object.create(Error.prototype);
+        // throw new StopGame("Stopping game..");
+    }
+
+
 };
 
 // This function should return true when the player activates the "go left" control
