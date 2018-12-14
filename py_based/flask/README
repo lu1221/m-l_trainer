@@ -1,0 +1,2 @@
+The following is required to run the hello world app
+  - export FLASK_APP=helloworld.py
