@@ -7,9 +7,11 @@
 #
 # Import flask class 'Flask'
 from flask import Flask
+# Import render class for rendering data to the frontend
+from flask import render_template
 # Instantiate 'Flask' class with name 'helloworld' or '[hierarchy]/helloworld'
 # depending on whether we are invoking with -m
-app = Flask(__name__);
+app = Flask(__name__, template_folder='./html');
 
 # Associate a rule with our connection
 # Here we are tagetting all incoming requests and simply respond with
@@ -22,3 +24,8 @@ app = Flask(__name__);
 def hello_world():
 	return 'Hello, World'
 
+# Replay with our html once we got a request targeting 127.0.0.1:5000/index
+@app.route('/index')
+# Callback function definition
+def index():
+  return render_template('index.html');
