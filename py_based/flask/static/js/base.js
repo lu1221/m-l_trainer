@@ -3,7 +3,27 @@
 // Copyright © 2014 John Watson
 // Licensed under the terms of the MIT License
 
+//AJAX FUNCTION(S)
+var AJAX_PostEvent = function() {
 
+// This function defines the method we used to send Ys upon
+// 1. a moonlanding crash
+// 2. timeout
+
+  var data = {
+      'status':'success'
+  }
+
+  $.ajax({
+      type: 'POST',
+      url:  '{{url_for("test.test_post")}}',
+      data: data,
+      dataType: 'json',
+      success:function(data){
+          alert(JSON.stringify(data));
+      }
+  });
+} 
 
 //GLOBAL VARIABLES
 var DISABLE_ROTATION = 1; // DISABLES ROTATION OF ROCKET
@@ -247,9 +267,11 @@ GameState.prototype.render = function() {
         // function StopGame(){ Error.apply(this, arguments); this.name = "StopGame";  }
         // StopGame.prototype = Object.create(Error.prototype);
         // throw new StopGame("Stopping game..");
+        
+        // A moonlanding crash will trigger a POST event
+        // and we need to let timeout trigger the POST as well
+        AJAX_PostEvent('', 'test', 'test');
     }
-
-
 };
 
 // This function should return true when the player activates the "go left" control

@@ -29,3 +29,10 @@ def hello_world():
 # Callback function definition
 def index():
   return render_template('index.html');
+
+# # Capture the event of moonlanding crash and etc
+# @app.route('/test_post/', methods=['POST', 'GET'])
+# def test_post():
+#     status = request.form.get('status')
+#     if status == 'success':
+#       return jsonify({'status':'success'})

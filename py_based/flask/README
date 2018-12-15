@@ -8,3 +8,6 @@ TDB
 Caveat
   - Flask app default static files aka. .png, .js .. to static folder so the
     prefix static is needed when including any of the static files
+
+Installation
+  - pip3 install flask
