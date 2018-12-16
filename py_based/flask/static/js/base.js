@@ -16,7 +16,7 @@ var AJAX_PostEvent = function() {
 
   $.ajax({
       type: 'POST',
-      url:  '{{url_for("test.test_post")}}',
+      url:  '/',
       data: data,
       dataType: 'json',
       success:function(data){

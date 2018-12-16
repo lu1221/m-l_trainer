@@ -9,6 +9,8 @@
 from flask import Flask
 # Import render class for rendering data to the frontend
 from flask import render_template
+# Import request class to handle ajax
+from flask import request
 # Instantiate 'Flask' class with name 'helloworld' or '[hierarchy]/helloworld'
 # depending on whether we are invoking with -m
 app = Flask(__name__, template_folder='./html');
@@ -30,9 +32,11 @@ def hello_world():
 def index():
   return render_template('index.html');
 
-# # Capture the event of moonlanding crash and etc
-# @app.route('/test_post/', methods=['POST', 'GET'])
-# def test_post():
-#     status = request.form.get('status')
-#     if status == 'success':
-#       return jsonify({'status':'success'})
+# Capture the event of moonlanding crash and etc
+@app.route('/', methods=['POST'])
+def test_post():
+    status = request.form.get('status')
+    if status == 'success':
+      print("Hello World!")
+      return "success"
+
