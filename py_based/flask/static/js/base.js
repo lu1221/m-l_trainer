@@ -4,26 +4,51 @@
 // Licensed under the terms of the MIT License
 
 //AJAX FUNCTION(S)
-var AJAX_PostEvent = function() {
 
 // This function defines the method we used to send Ys upon
 // 1. a moonlanding crash
 // 2. timeout
+var AJAX_PostEvent = function() {
 
   var data = {
       'status':'success'
   }
 
   $.ajax({
-      type: 'POST',
-      url:  '/',
-      data: data,
-      dataType: 'json',
-      success:function(data){
-          alert(JSON.stringify(data));
+      type:     'POST',
+      url:      '/',
+      data:     data,
+      error:    function(xhr, status) {
+          alert(xhr.readyState);
+      },
+      success:  function(data) {
+          alert("POST succeeded");
       }
   });
 } 
+
+// This function defines the method where the python codes use to pass new
+// feature data into the phaser
+var AJAX_GetEvent = function() {
+
+  // We don't really care about the send being sent over from phaser js,
+  // and the response is all we care about
+  var data = {
+  }
+
+  $.ajax({
+      type:     'GET',
+      url:      '/',
+      data:     data,
+      dataType: 'json',
+      error:    function() {
+          alert("No response!");
+      },
+      success:  function(data) {
+          alert("Got response!");
+      }
+  });
+}
 
 //GLOBAL VARIABLES
 var DISABLE_ROTATION = 1; // DISABLES ROTATION OF ROCKET

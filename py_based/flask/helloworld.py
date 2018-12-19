@@ -1,7 +1,6 @@
 #
 # This is a Hello World example, giving an introduction to Flask
-#
-
+# 
 #
 # Main imports
 #
@@ -11,6 +10,8 @@ from flask import Flask
 from flask import render_template
 # Import request class to handle ajax
 from flask import request
+# Import make_response class to handle response
+from flask import make_response
 # Instantiate 'Flask' class with name 'helloworld' or '[hierarchy]/helloworld'
 # depending on whether we are invoking with -m
 app = Flask(__name__, template_folder='./html');
@@ -38,5 +39,15 @@ def test_post():
     status = request.form.get('status')
     if status == 'success':
       print("Hello World!")
-      return "success"
+      
+      # Establish a response to phaser js upon crash info receival
+      response = make_response()
+      # Intialize response status
+      response.status_code = 200
+      # Force the response text type
+      response.headers["content-type"] = "json"
+      # Fill in response body
+      response.data = { 'status':'success'
+                  }
+      return response
 
