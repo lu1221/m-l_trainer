@@ -1,7 +1,13 @@
-// This example uses the Phaser 2.2.2 framework
+// 
+// This example uses the Phaser 2.2.2 framework and additional edits
+// are performed on top of the framework to addin Ajax support.
+// This forms the basis of our genetic evo algo
+//
 
-// Copyright © 2014 John Watson
+// Base Copyright © 2014 John Watson
 // Licensed under the terms of the MIT License
+
+// Additional edits are done by Shang and Erfan
 
 //AJAX FUNCTION(S)
 
@@ -14,13 +20,17 @@ var AJAX_PostEvent = function() {
       'status':'success'
   }
 
+  console.log("data", data)
+  
   $.ajax({
+      contentType: "application/json; charset=utf-8",
       type:     'POST',
-      url:      '/',
+      url:      '/LandingTrigger',
       data:     data,
-      error:    function(xhr, status) {
-          alert(xhr.readyState);
-      },
+      dataType: 'json',
+//       error:    function(xhr, status) {
+//           alert(xhr.readyState);
+//       },
       success:  function(data) {
           alert("POST succeeded");
       }

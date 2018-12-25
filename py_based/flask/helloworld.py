@@ -34,7 +34,7 @@ def index():
   return render_template('index.html');
 
 # Capture the event of moonlanding crash and etc
-@app.route('/', methods=['POST'])
+@app.route('/LandingTrigger', methods=['POST'])
 def test_post():
     status = request.form.get('status')
     if status == 'success':
@@ -45,9 +45,12 @@ def test_post():
       # Intialize response status
       response.status_code = 200
       # Force the response text type
-      response.headers["content-type"] = "json"
+      response.headers["content-type"] = "application/json; charset=UTF-8"
       # Fill in response body
-      response.data = { 'status':'success'
+      response.data = {
+                  "a":1
                   }
       return response
+
+    return "null"
 
