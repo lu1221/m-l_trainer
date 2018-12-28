@@ -14,25 +14,21 @@
 // This function defines the method we used to send Ys upon
 // 1. a moonlanding crash
 // 2. timeout
-var AJAX_PostEvent = function() {
-
-  var data = {
-      'status':'success'
-  }
-
-  console.log("data", data)
+var AJAX_PostEvent = function(data) {
   
   $.ajax({
       contentType: "application/json; charset=utf-8",
       type:     'POST',
       url:      '/LandingTrigger',
-      data:     data,
-      dataType: 'json',
-//       error:    function(xhr, status) {
-//           alert(xhr.readyState);
-//       },
+      data:     JSON.stringify(data),
+      dataType: "text",
+      error:    function(XMLHttpRequest, textStatus, errorThrown) {
+          alert(XMLHttpRequest.status)
+          alert(XMLHttpRequest.readyState)
+          alert(textStatus)
+      },
       success:  function(data) {
-          alert("POST succeeded");
+//           alert(data);
       }
   });
 } 
@@ -235,7 +231,17 @@ GameState.prototype.update = function() {
     // Set a variable that is true when the ship is touching the ground
     var onTheGround = this.ship.body.touching.down;
 
+    // Prepare info to feedback
+    var data = {
+        "status" : "success",
+        "altitude" : this.Y,
+        "acceleration" : this.acceleration,
+        "velocity" : this.velocity,
+        "explode" : this.explode
+    }
+
     if (onTheGround) {
+        
         if (Math.abs(this.ship.body.velocity.y) > 20 || Math.abs(this.ship.body.velocity.x) > 30) {
             // The ship hit the ground too hard.
             // Blow it up and start the game over.
@@ -254,7 +260,11 @@ GameState.prototype.update = function() {
             this.ship.body.velocity.setTo(0, 0);
             this.ship.angle = -90;
         }
-
+        
+        // Either a moonlanding crash or successful landing will trigger a POST event
+        // and we need to let timeout trigger the POST as well
+        data['explode'] = this.explode // explosion status update
+        AJAX_PostEvent(data);
     }
 
     if(this.ship.y < 0) {
@@ -265,6 +275,11 @@ GameState.prototype.update = function() {
       // Same idea as when we hit the ground
       this.resetShip();
       this.explode = 1;
+        
+      // Either a moonlanding crash or successful landing will trigger a POST event
+      // and we need to let timeout trigger the POST as well
+      data['explode'] = this.explode // explosion status update
+      AJAX_PostEvent(data);
     }
 
     if (this.upInputIsActive()) {
@@ -286,15 +301,16 @@ GameState.prototype.update = function() {
 
 // Try overloading the render function
 GameState.prototype.render = function() {
-
+        
     // When we receive the explode signal we stop the game
     // exit and return to the calling function with fitness score
     if (1 == this.explode) {
 
-        console.log(this.Y);
-        console.log(this.acceleration);
-        console.log(this.velocity);
-        console.log(this.explode);
+        // DBG
+        // console.log(this.Y);
+        // console.log(this.acceleration);
+        // console.log(this.velocity);
+        // console.log(this.explode);
         this.explode = 0;
 
         // DEBUG
@@ -302,10 +318,6 @@ GameState.prototype.render = function() {
         // function StopGame(){ Error.apply(this, arguments); this.name = "StopGame";  }
         // StopGame.prototype = Object.create(Error.prototype);
         // throw new StopGame("Stopping game..");
-        
-        // A moonlanding crash will trigger a POST event
-        // and we need to let timeout trigger the POST as well
-        AJAX_PostEvent('', 'test', 'test');
     }
 };
 
