@@ -31,20 +31,20 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 # basically tell us which URTL should trigger the function that follows it
 #
 # TBD: why are we calling with @app. ???
-@app.route('/')
+# @app.route('/')
 # triggering function
-def hello_world():
-	return 'Hello, World'
+# def hello_world():
+#   return 'Hello, World'
 
 # Replay with our html once we got a request targeting 127.0.0.1:5000/index
-@app.route('/index')
+@app.route('/Start')
 # Callback function definition
-def index():
+def start():
   return render_template('index.html')
 
 # Capture the event of moonlanding crash and etc
 @app.route('/LandingTrigger', methods=['POST'])
-def test_post():
+def landing():
     
     # request.form.get only works with GET request
     # and for POST request we use either request.args OR request.values
@@ -65,11 +65,50 @@ def test_post():
     print("explode :", explode)
 
     if status == 'success':
-      print("Hello World!")
+      print("Landing information accepted..")
       
       # Construct return message(s)
       retData = {
-            "arg1":"dat1"
+      
+      }
+      retStatus = 200
+
+      # Establish a response to phaser js upon crash info receival
+      response = make_response(json.dumps(retData), retStatus)
+      # Force the response text type
+      response.headers["content-type"] = "application/json; charset=UTF-8"
+      # Fill in response body
+      return response
+
+    return "null"
+
+# Handshake with phaser.js to initiate a new feature set,
+# in other words we use this to trigger/initiate a new set of genetic evolution
+@app.route('/EvolutionTrigger', methods=['POST'])
+def evolve():
+    
+    # In fact we don't care about POSTing content
+    # because we are targetting /EvolutionTrigger, we know we need to
+    # return a new set of feature values to initiate a genetic evolution
+
+    # The only thing we need to make sure is that the POST request got
+    # captured successfully and this is done by parsing the hash key, 'status'
+    # in the request
+    data = json.loads(request.get_data(as_text=True))
+
+    # Getting status
+    status = data['status']
+
+    if status == 'success':
+      print("(Re)initialize genetic evolution algorithm..")
+      
+      # Construct return message(s)
+      retData = {
+            "status" : "TBD",
+            "altitude" : "TBD",
+            "acceleration" : "TBD",
+            "velocity" : "TBD",
+            "explode" : "TBD"
       }
       retStatus = 200
 
