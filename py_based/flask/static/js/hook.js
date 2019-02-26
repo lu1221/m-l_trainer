@@ -232,7 +232,6 @@ GameState.prototype.update = function() {
     // No? reset and return
     // We are in the init phase
     if (!GLOBAL_INIT && !GLOBAL_RUN) {
-        console.log(GLOBAL_INIT);
         this.resetShip();
         return;
     }
@@ -274,6 +273,21 @@ GameState.prototype.update = function() {
         "velocity" : this.velocity,
         "explode" : this.explode
     }
+    
+    // We are in the return phase
+    // if (onTheGround || over the ceiling || Timeout)
+    if (onTheGround || this.ship.y < 0) {
+        // Clear all flags and await for let-go signal from MAIN
+        GLOBAL_INIT = 0;
+        GLOBAL_RUN = 0;
+        // Set return flag and send another REQ
+        GLOBAL_RET = 1;
+
+        // Award score calculation goes here
+
+        // POST award score to MAIN
+        AJAXCall_retAwardScore("RESP 0");
+    }
 
     if (onTheGround) {
         
@@ -313,21 +327,6 @@ GameState.prototype.update = function() {
       // Either a moonlanding crash or successful landing will trigger a POST event
       // and we need to let timeout trigger the POST as well
       data['explode'] = this.explode // explosion status update
-    }
-
-    // We are in the return phase
-    // if (onTheGround || over the ceiling || Timeout)
-    if (onTheGround || this.ship.y < 0) {
-        // Clear all flags and await for let-go signal from MAIN
-        GLOBAL_INIT = 0;
-        GLOBAL_RUN = 0;
-        // Set return flag and send another REQ
-        GLOBAL_RET = 1;
-
-        // Award score calculation goes here
-
-        // POST award score to MAIN
-        AJAXCall_retAwardScore("RESP 0");
     }
 
     if (this.upInputIsActive()) {
