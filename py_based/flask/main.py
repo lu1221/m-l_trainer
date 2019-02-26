@@ -17,6 +17,10 @@ from flask import request
 from flask import make_response
 # Import timedelta class to constantly clear the cache
 from datetime import timedelta
+
+# Import time for DBG
+import time
+
 # Instantiate 'Flask' class with name 'helloworld' or '[hierarchy]/helloworld'
 # depending on whether we are invoking with -m
 app = Flask(__name__, template_folder='./html');
@@ -42,82 +46,28 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 def start():
   return render_template('index.html')
 
-# Capture the event of moonlanding crash and etc
-@app.route('/LandingTrigger', methods=['POST'])
-def landing():
-    
-    # request.form.get only works with GET request
-    # and for POST request we use either request.args OR request.values
-    # Here we use jsonify raw data
-    data = json.loads(request.get_data(as_text=True))
+@app.route('/init', methods=['GET'])
+def init():
 
-    # Getting status
-    status = data['status']
-    altitude = data['altitude']
-    acceleration = data['acceleration']
-    velocity = data['velocity']
-    explode = data['explode']
+    # DBG
+    print("[MAIN] Sending weight matrix as response")
 
-    print("status :", status)
-    print("altitude :", altitude)
-    print("acceleration ::", acceleration)
-    print("velocity :", velocity)
-    print("explode :", explode)
+    time.sleep(2)
+    print("[MAIN] Waited 2s")
+  
+    # Prepare weight matrix
+    # DBG (sample)
+    ack = {"status": 1, "wmatrix": "WEIGHT_MATRIX_GOES_HERE"}
+     
+    # Make response
+    return make_response(json.dumps(ack), 200)
 
-    if status == 'success':
-      print("Landing information accepted..")
-      
-      # Construct return message(s)
-      retData = {
-      
-      }
-      retStatus = 200
+@app.route('/ret', methods=['POST'])
+def ret():
 
-      # Establish a response to phaser js upon crash info receival
-      response = make_response(json.dumps(retData), retStatus)
-      # Force the response text type
-      response.headers["content-type"] = "application/json; charset=UTF-8"
-      # Fill in response body
-      return response
+    # Parse POST packet and get award score
+    award_score = json.loads(request.get_data(as_text=True))
 
-    return "null"
+    print("[MAIN] Got award score", award_score)
 
-# Handshake with phaser.js to initiate a new feature set,
-# in other words we use this to trigger/initiate a new set of genetic evolution
-@app.route('/EvolutionTrigger', methods=['POST'])
-def evolve():
-    
-    # In fact we don't care about POSTing content
-    # because we are targetting /EvolutionTrigger, we know we need to
-    # return a new set of feature values to initiate a genetic evolution
-
-    # The only thing we need to make sure is that the POST request got
-    # captured successfully and this is done by parsing the hash key, 'status'
-    # in the request
-    data = json.loads(request.get_data(as_text=True))
-
-    # Getting status
-    status = data['status']
-
-    if status == 'success':
-      print("(Re)initialize genetic evolution algorithm..")
-      
-      # Construct return message(s)
-      retData = {
-            "status" : "TBD",
-            "altitude" : "TBD",
-            "acceleration" : "TBD",
-            "velocity" : "TBD",
-            "explode" : "TBD"
-      }
-      retStatus = 200
-
-      # Establish a response to phaser js upon crash info receival
-      response = make_response(json.dumps(retData), retStatus)
-      # Force the response text type
-      response.headers["content-type"] = "application/json; charset=UTF-8"
-      # Fill in response body
-      return response
-
-    return "null"
-
+    return make_response(json.dumps(""), 200)

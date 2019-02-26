@@ -7,19 +7,23 @@
 // Base Copyright © 2014 John Watson
 // Licensed under the terms of the MIT License
 
-// Additional edits are done by Shang and Erfan
+//GLOBAL VARIABLES
+var DISABLE_ROTATION = 1; // DISABLES ROTATION OF ROCKET
+var ENABLE_DEBUG_MSGS = 1; // ENABLES DEBUG MESSAGES
 
-//AJAX FUNCTION(S)
+var GLOBAL_INIT = 0;
+var GLOBAL_RUN = 0;
+var GLOBAL_RET = 0;
 
-// This function defines the method we used to send Ys upon
-// 1. a moonlanding crash
-// 2. timeout
-var AJAX_PostEvent = function(data) {
+// This event handler function makes the game engine render/do
+// nothing until get a successful init response containing
+// weight matrix
+var AJAXCall_initReq = function(data) {
   
   $.ajax({
       contentType: "application/json; charset=utf-8",
-      type:     'POST',
-      url:      '/LandingTrigger',
+      type:     'GET',
+      url:      '/init',
       data:     JSON.stringify(data),
       dataType: "text",
       error:    function(XMLHttpRequest, textStatus, errorThrown) {
@@ -28,37 +32,34 @@ var AJAX_PostEvent = function(data) {
           alert(textStatus)
       },
       success:  function(data) {
-//           alert(data);
+          ack = JSON.parse(data);
+          GLOBAL_INIT = ack["status"];
       }
   });
-} 
 
-// This function defines the method where the python codes use to pass new
-// feature data into the phaser
-var AJAX_GetEvent = function() {
-
-  // We don't really care about the send being sent over from phaser js,
-  // and the response is all we care about
-  var data = {
-  }
-
-  $.ajax({
-      type:     'GET',
-      url:      '/',
-      data:     data,
-      dataType: 'json',
-      error:    function() {
-          alert("No response!");
-      },
-      success:  function(data) {
-          alert("Got response!");
-      }
-  });
 }
 
-//GLOBAL VARIABLES
-var DISABLE_ROTATION = 1; // DISABLES ROTATION OF ROCKET
-var ENABLE_DEBUG_MSGS = 1; // ENABLES DEBUG MESSAGES
+// This even handler function simplely POST the award score our
+// main python
+var AJAXCall_retAwardScore = function(data) {
+  
+  $.ajax({
+      contentType: "application/json; charset=utf-8",
+      type:     'POST',
+      url:      '/ret',
+      data:     JSON.stringify(data),
+      dataType: "text",
+      error:    function(XMLHttpRequest, textStatus, errorThrown) {
+          alert(XMLHttpRequest.status)
+          alert(XMLHttpRequest.readyState)
+          alert(textStatus)
+      },
+      success:  function(data) {
+      }
+  });
+
+}
+
 
 var GameState = function(game) {
 
@@ -142,6 +143,11 @@ GameState.prototype.create = function() {
         Phaser.Keyboard.UP,
         Phaser.Keyboard.DOWN
     ]);
+
+    // Init REQ, non-blocking wait for ACK
+    // Once we have the ACK, "de"-reset the ship and start
+    // simulate
+    AJAXCall_initReq("REQ_1");
 };
 
 // Try to get a used explosion from the explosionGroup.
@@ -208,6 +214,35 @@ GameState.prototype.update = function() {
       this.Y = this.ship.y.toFixed(2);
       this.acceleration = this.ship.body.acceleration;
       this.velocity = this.ship.body.velocity.y.toFixed(2);
+
+      // DBG
+      // console.log(init);
+    }
+
+    // Early catch RET flag
+    // If we arrive at the point it means we already went
+    // through simulation once, and this is the 2+ round
+    if (GLOBAL_RET) {
+        GLOBAL_RET = 0;
+        AJAXCall_initReq("REQ_N");
+    }
+
+    // Have we init i.e. received a weight matrix yet?
+    // Yes? continue
+    // No? reset and return
+    // We are in the init phase
+    if (!GLOBAL_INIT && !GLOBAL_RUN) {
+        console.log(GLOBAL_INIT);
+        this.resetShip();
+        return;
+    }
+
+    // If we arrive at this point we've already received the
+    // ACK as well as the weight matrix
+    // We are in the run phase
+    if (GLOBAL_INIT && !GLOBAL_RUN) {
+        GLOBAL_INIT = 0;
+        GLOBAL_RUN  = 1; 
     }
 
     // Collide the ship with the ground
@@ -264,7 +299,6 @@ GameState.prototype.update = function() {
         // Either a moonlanding crash or successful landing will trigger a POST event
         // and we need to let timeout trigger the POST as well
         data['explode'] = this.explode // explosion status update
-        AJAX_PostEvent(data);
     }
 
     if(this.ship.y < 0) {
@@ -279,7 +313,21 @@ GameState.prototype.update = function() {
       // Either a moonlanding crash or successful landing will trigger a POST event
       // and we need to let timeout trigger the POST as well
       data['explode'] = this.explode // explosion status update
-      AJAX_PostEvent(data);
+    }
+
+    // We are in the return phase
+    // if (onTheGround || over the ceiling || Timeout)
+    if (onTheGround || this.ship.y < 0) {
+        // Clear all flags and await for let-go signal from MAIN
+        GLOBAL_INIT = 0;
+        GLOBAL_RUN = 0;
+        // Set return flag and send another REQ
+        GLOBAL_RET = 1;
+
+        // Award score calculation goes here
+
+        // POST award score to MAIN
+        AJAXCall_retAwardScore("RESP 0");
     }
 
     if (this.upInputIsActive()) {
