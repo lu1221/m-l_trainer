@@ -16,7 +16,7 @@ MAX_VEL = 250.0
 
 #### X Inputs will be array of values (y-coordinate, velocity) ###################################
 #
-# [distance]            coordinates in base.js games ranges from 0.0 (ceiling) to 402.0 (ground)
+# [distance]            coordinates in hook.js games ranges from 0.0 (ceiling) to 402.0 (ground)
 # [velocity]     velocity ranges from -250.0 (max speed going up) to 250.0 (max fall speed possible)
 # TODO: Consider extra features for expanding to horizontal movement of lander
 # [boost]        binary output 1=boost, 0=no action
