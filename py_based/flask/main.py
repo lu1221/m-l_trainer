@@ -21,6 +21,9 @@ from datetime import timedelta
 # Import time for DBG
 import time
 
+# Import numberic lib
+import numpy
+
 # Instantiate 'Flask' class with name 'helloworld' or '[hierarchy]/helloworld'
 # depending on whether we are invoking with -m
 app = Flask(__name__, template_folder='./html');
@@ -56,8 +59,22 @@ def init():
     print("[MAIN] Waited 2s")
   
     # Prepare weight matrix
-    # DBG (sample)
-    ack = {"status": 1, "wmatrix": "WEIGHT_MATRIX_GOES_HERE"}
+    # DBG (usage sample)
+    # The weight matrix(s) is(are) in the format of [matrixcount, matrix1, matrix2, ..]
+    matrix_count = 3
+    # matrix 1 -> 2x5 matrix (2 rows x 5 cols)
+    matrix1 = [[1, 1, 1, 1, 1], [0, 0, 0, 0, 0]]
+    # matrix 2 -> 5x5 matrix
+    matrix2 = [[1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1]]
+    # matrix 3 -> 5x1 matrix
+    matrix3 = [[1], [2], [3], [4], [5]]
+    matrix  = []
+    matrix.append(matrix1)
+    matrix.append(matrix2)
+    matrix.append(matrix3)
+    
+    # Send the weight matrices over, dynamic matrix count supported
+    ack = {"status": 1, "matrix_count": matrix_count, "matrix": matrix}
      
     # Make response
     return make_response(json.dumps(ack), 200)

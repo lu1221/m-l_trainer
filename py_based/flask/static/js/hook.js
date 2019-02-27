@@ -11,9 +11,66 @@
 var DISABLE_ROTATION = 1; // DISABLES ROTATION OF ROCKET
 var ENABLE_DEBUG_MSGS = 1; // ENABLES DEBUG MESSAGES
 
+var GLOBAL_MATRIX_COUNT = -1;
+var GLOBAL_MATRIX = [];
+
 var GLOBAL_INIT = 0;
 var GLOBAL_RUN = 0;
 var GLOBAL_RET = 0;
+
+// The following UTILS_* functions are Pretty self-explanatory,
+// they are helper functions that does matrix operations
+var UTILS_matrixMultiple = function(matrixA, matrixB) {
+
+    // Matrix A - getting row and column counts
+    var mA_row = matrixA.length;
+    var mA_col = matrixA[0].length;
+
+    // Matrix B - getting row and column counts
+    var mB_row = matrixB.length;
+    var mB_col = matrixB[0].length;
+
+    // DBG
+    // console.log(mA_row, mA_col, mB_row, mB_col);
+
+    // Perform A X B
+    // dim(result) = (mA_row x mB_col)
+    var result = [];
+    for (var i=0; i<mA_row; i++) {
+        // Finish declaring 2D array
+        result[i] = [];
+        for (var j=0; j<mB_col; j++) {
+            // Temp VAR to store matrixA[row#][*] * matrixB[*][col#]
+            var interim = 0;
+            // Either dim(mA_col) or dim(mB_row) is ok as they should match
+            for (var k=0; k<mA_col; k++) {
+                interim += matrixA[i][k] * matrixB[k][j];
+            }
+            result[i][j] = interim;
+        }
+    } 
+    
+    return result;
+}
+
+var UTILS_matrixTranspose = function(matrix) {
+
+    var row = matrix.length;
+    var col = matrix[0].length;
+
+    var result = [];
+    for (var j=0; j<col; j++) {
+        result[j] = [];
+    }
+
+    for (var i=0; i<row; i++) {
+        for (var j=0; j<col; j++) {
+            result[j][i] = matrix[i][j];
+        }
+    }
+
+    return result;
+}
 
 // This event handler function makes the game engine render/do
 // nothing until get a successful init response containing
@@ -32,7 +89,9 @@ var AJAXCall_initReq = function(data) {
           alert(textStatus)
       },
       success:  function(data) {
-          ack = JSON.parse(data);
+          var ack = JSON.parse(data);
+          GLOBAL_MATRIX_COUNT = ack["matrix_count"]; 
+          GLOBAL_MATRIX = ack["matrix"];
           GLOBAL_INIT = ack["status"];
       }
   });
@@ -244,6 +303,25 @@ GameState.prototype.update = function() {
         GLOBAL_RUN  = 1; 
     }
 
+    // Get current state of altitude and velocity
+    var data = {
+        "status" : "success",
+        "altitude" : this.Y,
+        "acceleration" : this.acceleration,
+        "velocity" : this.velocity,
+        "explode" : this.explode
+    }
+
+    // Real-time prediction
+    var input_matrix = [[data["altitude"], data["velocity"]]];
+    var interim = UTILS_matrixMultiple(input_matrix, GLOBAL_MATRIX[0]);
+    for (var i=1; i<GLOBAL_MATRIX_COUNT; i++) {
+        interim = UTILS_matrixMultiple(interim, GLOBAL_MATRIX[i]);
+    }
+    var action = interim[0][0];
+    // DBG
+    console.log(action);
+
     // Collide the ship with the ground
     this.game.physics.arcade.collide(this.ship, this.ground);
 
@@ -265,15 +343,6 @@ GameState.prototype.update = function() {
     // Set a variable that is true when the ship is touching the ground
     var onTheGround = this.ship.body.touching.down;
 
-    // Prepare info to feedback
-    var data = {
-        "status" : "success",
-        "altitude" : this.Y,
-        "acceleration" : this.acceleration,
-        "velocity" : this.velocity,
-        "explode" : this.explode
-    }
-    
     // We are in the return phase
     // if (onTheGround || over the ceiling || Timeout)
     if (onTheGround || this.ship.y < 0) {
