@@ -2,7 +2,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPClassifier
 import numpy as np
 import random
+from datetime import datetime
+import re
 
+random.seed(datetime.now())
 NUM_FEATURES = 2
 NUM_TRAIN_SETS = 10000
 PRECISION = 1 #Number of decimal places for precision
@@ -22,9 +25,20 @@ MAX_VEL = 250.0
 # [boost]        binary output 1=boost, 0=no action
 ##################################################################################################
 
+def getRandWeightMatrix(_hidden_layer_sizes=(5,5)):
+  matrix = []
+  mlp = initRandNN(_hidden_layer_sizes)
+  rand_X = generateRandFeatures()
+  rand_Y = generateRandOutputs()
+  mlp.fit(rand_X, rand_Y)
+  printNNInfo(mlp)
+  weightMatrix = getWeightMatrix(mlp)
+  #print("[MATRIX IS]:\n", weightMatrix)
+  return weightMatrix
+
 # Setup a randomized neural network with 2 hidden layers of size 5,5
-def initRandNN():
-  mlp = MLPClassifier(alpha=1e-5, hidden_layer_sizes=(5, 5), random_state=1)
+def initRandNN(_hidden_layer_sizes=(5,5)):
+  mlp = MLPClassifier(alpha=1e-5, hidden_layer_sizes=_hidden_layer_sizes, random_state=1)
   return mlp
 
 
@@ -68,7 +82,13 @@ def printNNInfo(mlp):
   print(mlp.intercepts_[1])
   print("*******************************************************")
 
-
+#return a matrix where each element is a weight matrix
+def getWeightMatrix(mlp):
+  matrix=[]
+  for i in mlp.coefs_:
+    #print("COEFS IS: ", (np.matrix(i)).tolist())
+    matrix.append((np.matrix(i)).tolist())
+  return matrix
 
 # Using a FITTED MLP
 # Returns prediction matrix with 2 columns (dist, vel) for all values where output boost = 1
@@ -123,34 +143,40 @@ def getPredictionMatrix(mlp):
 # Just trying out functions here to see if they are working                     #
 #################################################################################
 
+#getRandWeightMatrix(_hidden_layer_sizes=(5,5))
 
-mlp = initRandNN()
-rand_X = generateRandFeatures()
-rand_Y = generateRandOutputs()
-print(mlp)
-#printFeatures(rand_X)
-#print(rand_Y)
-
-##Standardize features by removing the mean and scaling to unit variance
-##The standard score of a sample x is calculated as:
-##  z = (x - u) / s
-#scaler = StandardScaler()
-#print(scaler.fit(rand_X))
-#print(scaler.mean_)
-#print(scaler.transform(rand_X))
-mlp.fit(rand_X, rand_Y)
-
-print([coef.shape for coef in mlp.coefs_])
-print (mlp.coefs_)
-
-printNNInfo(mlp)
-
-
-
-PredictionMatrix = getPredictionMatrix(mlp)
-
-#predict_X = generateRandFeatures()
-#print(mlp.predict(predict_X))
-
-#arr = np.arange(0,11)
-#print(arr)
+#mlp = initRandNN(_hidden_layer_sizes=(5,5))
+#rand_X = generateRandFeatures()
+#rand_Y = generateRandOutputs()
+#print(mlp)
+##printFeatures(rand_X)
+##print(rand_Y)
+#
+###Standardize features by removing the mean and scaling to unit variance
+###The standard score of a sample x is calculated as:
+###  z = (x - u) / s
+##scaler = StandardScaler()
+##print(scaler.fit(rand_X))
+##print(scaler.mean_)
+##print(scaler.transform(rand_X))
+#mlp.fit(rand_X, rand_Y)
+#
+#print([coef.shape for coef in mlp.coefs_])
+#print (mlp.coefs_)
+#
+#printNNInfo(mlp)
+#
+#weightMatrix = getWeightMatrix(mlp)
+#matrix_count = len(weightMatrix)
+#print(weightMatrix)
+#print(len(weightMatrix))
+#
+#getRandWeightMatrix(_hidden_layer_sizes=(5,5))
+#
+##PredictionMatrix = getPredictionMatrix(mlp)
+#
+##predict_X = generateRandFeatures()
+##print(mlp.predict(predict_X))
+#
+##arr = np.arange(0,11)
+##print(arr)

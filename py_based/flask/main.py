@@ -18,6 +18,7 @@ from flask import make_response
 # Import timedelta class to constantly clear the cache
 from datetime import timedelta
 
+from algorithm import nn
 # Import time for DBG
 import time
 
@@ -58,24 +59,31 @@ def init():
     time.sleep(2)
     print("[MAIN] Waited 2s")
   
-    # Prepare weight matrix
-    # DBG (usage sample)
-    # The weight matrix(s) is(are) in the format of [matrixcount, matrix1, matrix2, ..]
-    matrix_count = 3
-    # matrix 1 -> 2x5 matrix (2 rows x 5 cols)
-    matrix1 = [[1, 1, 1, 1, 1], [0, 0, 0, 0, 0]]
-    # matrix 2 -> 5x5 matrix
-    matrix2 = [[1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1]]
-    # matrix 3 -> 5x1 matrix
-    matrix3 = [[1], [2], [3], [4], [5]]
-    matrix  = []
-    matrix.append(matrix1)
-    matrix.append(matrix2)
-    matrix.append(matrix3)
-    
+    use_nn = True
+
+    if use_nn == False:
+      # Prepare weight matrix
+      # DBG (usage sample)
+      # The weight matrix(s) is(are) in the format of [matrixcount, matrix1, matrix2, ..]
+      matrix_count = 3
+      # matrix 1 -> 2x5 matrix (2 rows x 5 cols)
+      matrix1 = [[1, 1, 1, 1, 1], [0, 0, 0, 0, 0]]
+      # matrix 2 -> 5x5 matrix
+      matrix2 = [[1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1]]
+      # matrix 3 -> 5x1 matrix
+      matrix3 = [[1], [2], [3], [4], [5]]
+      matrix  = []
+      matrix.append(matrix1)
+      matrix.append(matrix2)
+      matrix.append(matrix3)
+      print("[MAIN] MATRIX IS ", matrix)
+    else:
+      matrix = nn.getRandWeightMatrix() #can pass in hidden layer sizes to this as needed
+      matrix_count = len(matrix)
+      print("[MAIN] NEW MATRIX IS", matrix)
+
     # Send the weight matrices over, dynamic matrix count supported
-    ack = {"status": 1, "matrix_count": matrix_count, "matrix": matrix}
-     
+    ack = {"status": 1, "matrix_count": matrix_count, "matrix": matrix}    
     # Make response
     return make_response(json.dumps(ack), 200)
 
