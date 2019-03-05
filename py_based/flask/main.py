@@ -76,10 +76,12 @@ def init():
       matrix.append(matrix1)
       matrix.append(matrix2)
       matrix.append(matrix3)
-      print("[MAIN] MATRIX IS ", matrix)
+      # DBG
+      # print("[MAIN] MATRIX IS ", matrix)
     else:
       matrix = nn.getRandWeightMatrix() #can pass in hidden layer sizes to this as needed
       matrix_count = len(matrix)
+      # DBG
       print("[MAIN] NEW MATRIX IS", matrix)
 
     # Send the weight matrices over, dynamic matrix count supported

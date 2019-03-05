@@ -31,7 +31,7 @@ def getRandWeightMatrix(_hidden_layer_sizes=(5,5)):
   rand_X = generateRandFeatures()
   rand_Y = generateRandOutputs()
   mlp.fit(rand_X, rand_Y)
-  printNNInfo(mlp)
+  # printNNInfo(mlp)
   weightMatrix = getWeightMatrix(mlp)
   #print("[MATRIX IS]:\n", weightMatrix)
   return weightMatrix

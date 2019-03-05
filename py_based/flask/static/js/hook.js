@@ -20,6 +20,22 @@ var GLOBAL_RET = 0;
 
 // The following UTILS_* functions are Pretty self-explanatory,
 // they are helper functions that does matrix operations
+var UTILS_thresholdcheck = function(input, threshold) {
+
+    return (input < 0.5);
+}
+
+var UTILS_activation = function(x) {
+    
+    var result;
+
+    // Sigmoid
+    result = 1 / (1 + Math.exp(-1 * x));
+
+    return result;
+
+}
+
 var UTILS_matrixMultiple = function(matrixA, matrixB) {
 
     // Matrix A - getting row and column counts
@@ -46,7 +62,8 @@ var UTILS_matrixMultiple = function(matrixA, matrixB) {
             for (var k=0; k<mA_col; k++) {
                 interim += matrixA[i][k] * matrixB[k][j];
             }
-            result[i][j] = interim;
+            // Apply activation function (in this case we keep it sigmoid)
+            result[i][j] = UTILS_activation(interim);
         }
     } 
     
@@ -398,7 +415,8 @@ GameState.prototype.update = function() {
       data['explode'] = this.explode // explosion status update
     }
 
-    if (this.upInputIsActive()) {
+    // old: if (this.upInputIsActive()) {
+    if ( UTILS_thresholdcheck(action, 0.5) ) {
         // If the UP key is down, thrust
         // Calculate acceleration vector based on this.angle and this.ACCELERATION
         this.ship.body.acceleration.x = Math.cos(this.ship.rotation) * this.ACCELERATION;
