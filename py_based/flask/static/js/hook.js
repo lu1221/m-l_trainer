@@ -18,10 +18,26 @@ var GLOBAL_INIT = 0;
 var GLOBAL_RUN = 0;
 var GLOBAL_RET = 0;
 
+var GLOBAL_STARTTIME;
+var GLOBAL_ENDTIME;
+var GLOBAL_TIMEDIFF;
+
 // The following UTILS_* functions are Pretty self-explanatory,
 // they are helper functions that does matrix operations
-var UTILS_thresholdcheck = function(input, threshold) {
+var UTILS_starttimer = function() {
+    GLOBAL_STARTTIME = new Date();
+}
 
+var UTILS_endtimer = function() {
+    GLOBAL_ENDTIME = new Date();
+    GLOBAL_TIMEDIFF = GLOBAL_ENDTIME - GLOBAL_STARTTIME;
+    
+    // Use second as the unit but have ms as the precision
+    GLOBAL_TIMEDIFF /= 1000;
+    GLOBAL_TIMEDIFF = Math.round(GLOBAL_TIMEDIFF*1000)/1000;
+}
+
+var UTILS_thresholdcheck = function(input, threshold) {
     return (input < 0.5);
 }
 
@@ -317,7 +333,10 @@ GameState.prototype.update = function() {
     // We are in the run phase
     if (GLOBAL_INIT && !GLOBAL_RUN) {
         GLOBAL_INIT = 0;
-        GLOBAL_RUN  = 1; 
+        GLOBAL_RUN  = 1;
+
+        // Start timer
+        UTILS_starttimer();
     }
 
     // Get current state of altitude and velocity
@@ -368,6 +387,11 @@ GameState.prototype.update = function() {
         GLOBAL_RUN = 0;
         // Set return flag and send another REQ
         GLOBAL_RET = 1;
+
+        // Stop timer
+        UTILS_endtimer();
+        // DBG
+        console.log("Elapsed time(s): " + GLOBAL_TIMEDIFF);
 
         // Award score calculation goes here
 
