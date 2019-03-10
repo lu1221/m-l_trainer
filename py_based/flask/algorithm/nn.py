@@ -7,15 +7,15 @@ import re
 
 random.seed(datetime.now())
 NUM_FEATURES = 2
-NUM_TRAIN_SETS = 10000
-PRECISION = 1 #Number of decimal places for precision
+NUM_TRAIN_SETS = 100000
+PRECISION = 4 #Number of decimal places for precision
 
 
-MIN_DIST = 0.0
+MIN_DIST = 32.0
 MAX_DIST = 402.0
 
-MIN_VEL = -250.0
-MAX_VEL = 250.0
+MIN_VEL = 0.0
+MAX_VEL = 200.0
 
 #### X Inputs will be array of values (y-coordinate, velocity) ###################################
 #
@@ -29,16 +29,27 @@ def getRandWeightMatrix(_hidden_layer_sizes=(5,5)):
   matrix = []
   mlp = initRandNN(_hidden_layer_sizes)
   rand_X = generateRandFeatures()
+  #printFeatures(rand_X)
   rand_Y = generateRandOutputs()
+  #print(rand_Y)
   mlp.fit(rand_X, rand_Y)
-  # printNNInfo(mlp)
+  #printNNInfo(mlp)
+ 
   weightMatrix = getWeightMatrix(mlp)
   #print("[MATRIX IS]:\n", weightMatrix)
+  
+  #Testing MLP Here to check outputs
+  num_test_samples = random.randint(100,150)
+  rndm_dist = np.transpose([np.around(np.linspace(32,402,num_test_samples),decimals=PRECISION)])
+  rndm_vel = np.transpose([np.around(np.linspace(0,200,num_test_samples),decimals=PRECISION)])
+  test_samples = np.append(rndm_dist, rndm_vel, axis=1)
+  #print(test_samples)
+  print(mlp.predict(test_samples))
   return weightMatrix
 
 # Setup a randomized neural network with 2 hidden layers of size 5,5
 def initRandNN(_hidden_layer_sizes=(5,5)):
-  mlp = MLPClassifier(alpha=1e-5, hidden_layer_sizes=_hidden_layer_sizes, random_state=1)
+  mlp = MLPClassifier(alpha=1e-5, hidden_layer_sizes=_hidden_layer_sizes, random_state=1, activation='logistic')
   return mlp
 
 
@@ -143,7 +154,7 @@ def getPredictionMatrix(mlp):
 # Just trying out functions here to see if they are working                     #
 #################################################################################
 
-#getRandWeightMatrix(_hidden_layer_sizes=(5,5))
+#getRandWeightMatrix(_hidden_layer_sizes=(10,10))
 
 #mlp = initRandNN(_hidden_layer_sizes=(5,5))
 #rand_X = generateRandFeatures()

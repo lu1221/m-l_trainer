@@ -79,10 +79,10 @@ def init():
       # DBG
       # print("[MAIN] MATRIX IS ", matrix)
     else:
-      matrix = nn.getRandWeightMatrix() #can pass in hidden layer sizes to this as needed
+      matrix = nn.getRandWeightMatrix(_hidden_layer_sizes=(10,10)) #can pass in hidden layer sizes to this as needed
       matrix_count = len(matrix)
       # DBG
-      print("[MAIN] NEW MATRIX IS", matrix)
+      # print("[MAIN] NEW MATRIX IS", matrix)
 
     # Send the weight matrices over, dynamic matrix count supported
     ack = {"status": 1, "matrix_count": matrix_count, "matrix": matrix}    

@@ -38,7 +38,7 @@ var UTILS_endtimer = function() {
 }
 
 var UTILS_thresholdcheck = function(input, threshold) {
-    return (input < 0.5);
+    return (input < 0.54);
 }
 
 var UTILS_activation = function(x) {
@@ -356,7 +356,7 @@ GameState.prototype.update = function() {
     }
     var action = interim[0][0];
     // DBG
-    console.log(action);
+    console.log(data["altitude"], data["velocity"],action);
 
     // Collide the ship with the ground
     this.game.physics.arcade.collide(this.ship, this.ground);
