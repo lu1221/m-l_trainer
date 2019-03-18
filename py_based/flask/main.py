@@ -56,7 +56,7 @@ def init():
     # DBG
     print("[MAIN] Sending weight matrix as response")
 
-    time.sleep(2)
+    time.sleep(0.5)
     print("[MAIN] Waited 2s")
   
     use_nn = True
@@ -93,7 +93,7 @@ def init():
 def ret():
 
     # Parse POST packet and get award score
-    award_score = json.loads(request.get_data(as_text=True))
+    award_score = json.loads(request.get_data())
 
     print("[MAIN] Got award score", award_score)
 

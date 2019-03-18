@@ -10,6 +10,7 @@
 //GLOBAL VARIABLES
 var DISABLE_ROTATION = 1; // DISABLES ROTATION OF ROCKET
 var ENABLE_DEBUG_MSGS = 1; // ENABLES DEBUG MESSAGES
+var TIMEOUT = 25;
 
 var GLOBAL_MATRIX_COUNT = -1;
 var GLOBAL_MATRIX = [];
@@ -356,7 +357,7 @@ GameState.prototype.update = function() {
     }
     var action = interim[0][0];
     // DBG
-    console.log(data["altitude"], data["velocity"],action);
+    // console.log(data["altitude"], data["velocity"],action);
 
     // Collide the ship with the ground
     this.game.physics.arcade.collide(this.ship, this.ground);
@@ -376,27 +377,52 @@ GameState.prototype.update = function() {
         this.ship.body.angularVelocity = 0;
     }
 
+    // Stop timer
+    UTILS_endtimer();
+    // DBG
+    console.log("Elapsed time(s): " + GLOBAL_TIMEDIFF);
+
     // Set a variable that is true when the ship is touching the ground
     var onTheGround = this.ship.body.touching.down;
 
     // We are in the return phase
     // if (onTheGround || over the ceiling || Timeout)
-    if (onTheGround || this.ship.y < 0) {
+    if (onTheGround || this.ship.y < 0 || GLOBAL_TIMEDIFF > TIMEOUT) {
         // Clear all flags and await for let-go signal from MAIN
         GLOBAL_INIT = 0;
         GLOBAL_RUN = 0;
         // Set return flag and send another REQ
         GLOBAL_RET = 1;
 
-        // Stop timer
-        UTILS_endtimer();
-        // DBG
-        console.log("Elapsed time(s): " + GLOBAL_TIMEDIFF);
-
         // Award score calculation goes here
+        // There are multiple criteria determining the reward score
+        // 1st: range[0-402*200]: focusing on ruling out timing out
+        // 2nd: range[0-(402+200)*1/(402/201)]: focusing on ruling out crashing with max speed
+        // 3rd: range[0-350*35] : give timeout a weight
+        var weight_1 = (402 - Math.abs(data["altitude"])) * Math.abs(data["velocity"]);
+        var weight_2_f1 = (402 - Math.abs(data["altitude"])) + Number(Math.abs(data["velocity"]));
+        var weight_2_f2 = 1/( Math.abs(data["altitude"])/(Math.abs(data["velocity"]) + 1) );
+        var weight_2 = weight_2_f1 * weight_2_f2; 
+        var weight_3 = 350 * GLOBAL_TIMEDIFF;
+        
+        // DBG
+        console.log("weight 1 : " + weight_1);
+        console.log("weight 2 : " + weight_2);
+        console.log("weight 2 f1 : " + weight_2_f1);
+        console.log("weight 2 f2 : " + weight_2_f2);
+        console.log("weight 3 : " + weight_3);
+
+        var rewardScore = weight_1 + weight_2 + weight_3;
 
         // POST award score to MAIN
-        AJAXCall_retAwardScore("RESP 0");
+        AJAXCall_retAwardScore(rewardScore);
+    }
+
+    if (GLOBAL_TIMEDIFF > TIMEOUT) {
+        this.getExplosion(this.ship.x, this.ship.y);
+        this.resetShip();
+        this.explode = 1;
+        UTILS_starttimer();
     }
 
     if (onTheGround) {
