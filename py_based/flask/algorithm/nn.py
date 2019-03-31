@@ -36,7 +36,7 @@ def getRandWeightMatrix(_hidden_layer_sizes=(5,5)):
   #printNNInfo(mlp)
  
   weightMatrix = getWeightMatrix(mlp)
-  print("[MATRIX IS]:\n", weightMatrix)
+  #print("[MATRIX IS]:\n", weightMatrix['np_matrix'])
   
   #Testing MLP Here to check outputs
   num_test_samples = random.randint(100,150)
@@ -98,17 +98,18 @@ def getWeightMatrix(mlp):
   matrix=[]
   np_matrix=[]
   for i in mlp.coefs_:
-    print("COEFS IS: ", (np.matrix(i)))
+    #print("COEFS IS: ", (np.matrix(i)))
     np_matrix.append(np.matrix(i))
     matrix.append((np.matrix(i)).tolist())
 
   #Can save matrix data information to files here
-  #np.savez('/tmp/f1.npz',matrix=np_matrix,matrix_id=MATRIX_ID)
+  #np.savez('/tmp/f1.npz',matrix=np_matrix,matrix_id=MATRIX_ID,award_score=-1)
  
   #data = np.load('/tmp/f1.npz')
   #print("DATAFILE ID IS :", data['matrix_id'])
+  #print("DATAFILE ID AWARD :", data['award_score'])
   #print("DATAFILE IS    :", data['matrix'])
-  return matrix
+  return { "matrix_formatted" : matrix, "np_matrix" : np_matrix}
 
 # Using a FITTED MLP
 # Returns prediction matrix with 2 columns (dist, vel) for all values where output boost = 1
@@ -155,7 +156,19 @@ def getPredictionMatrix(mlp):
   print(mlp.predict(PredictArray))
   return PredictArray
 
-  
+#Get Average of 2 MLP Weight Matrix sets
+#Both NN Weight Matrices must be of same dimensions!
+def getMeanNN(w1, w2):
+  new_w = []
+  for i in range(0,len(w1)):
+    new_w.append(getMeanMatrix(w1[i],w2[i]))
+  return new_w
+     
+    
+
+#Get Average of 2 Matrices
+def getMeanMatrix(mat1, mat2):
+  return (np.array(mat1) + np.array(mat2))/2
 
 
 
@@ -163,7 +176,24 @@ def getPredictionMatrix(mlp):
 # Just trying out functions here to see if they are working                     #
 #################################################################################
 
-#getRandWeightMatrix(_hidden_layer_sizes=(10,10))
+local_trial = False #True
+if local_trial == True:
+  weights1 = getRandWeightMatrix(_hidden_layer_sizes=(10,10))
+  weights2 = getRandWeightMatrix(_hidden_layer_sizes=(10,10))
+  
+  w1 = weights1['np_matrix']
+  w2 = weights2['np_matrix']
+  
+  
+  print(w1)
+  print(w2)
+  #print(len(w1['np_matrix']))
+  #for i in range(0,len(w1['np_matrix'])):
+  #  print(i)
+  #  print(w1['np_matrix'][i])
+  
+  w_new = getMeanNN(w1, w2)
+  print (w_new)
 
 #mlp = initRandNN(_hidden_layer_sizes=(5,5))
 #rand_X = generateRandFeatures()

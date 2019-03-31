@@ -90,7 +90,7 @@ def init():
     #np.savetxt('MATRIX_DATA.dat',matrix)
 
     # Send the weight matrices over, dynamic matrix count supported
-    ack = {"status": 1, "matrix_count": matrix_count, "matrix": matrix, "matrix_id": matrix_id}
+    ack = {"status": 1, "matrix_count": matrix_count, "matrix": matrix['matrix_formatted'], "matrix_id": matrix_id}
     # Make response
     return make_response(json.dumps(ack), 200)
 
@@ -102,6 +102,12 @@ def ret():
 
     print("[MAIN] Got award score", award_score)
     #TODO Add score to file corresponding to ID
-    
+    #data = np.load('/tmp/f1.npz')
+    #np.savez('/tmp/f1.npz',matrix=data['matrix'],matrix_id=data['matrix_id'],award_score=award_score)
+    #data = np.load('/tmp/f1.npz')
+    #print("[MAIN] DATAFILE ID IS :", data['matrix_id'])
+    #print("[MAIN] DATAFILE ID AWARD :", data['award_score'])
+    #print("[MAIN] DATAFILE IS    :", data['matrix'])
+
 
     return make_response(json.dumps(""), 200)
