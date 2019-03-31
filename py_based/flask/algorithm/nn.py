@@ -10,7 +10,7 @@ NUM_FEATURES = 2
 NUM_TRAIN_SETS = 100000
 PRECISION = 4 #Number of decimal places for precision
 
-
+MATRIX_ID = 0
 MIN_DIST = 32.0
 MAX_DIST = 402.0
 
@@ -36,7 +36,7 @@ def getRandWeightMatrix(_hidden_layer_sizes=(5,5)):
   #printNNInfo(mlp)
  
   weightMatrix = getWeightMatrix(mlp)
-  #print("[MATRIX IS]:\n", weightMatrix)
+  print("[MATRIX IS]:\n", weightMatrix)
   
   #Testing MLP Here to check outputs
   num_test_samples = random.randint(100,150)
@@ -96,9 +96,18 @@ def printNNInfo(mlp):
 #return a matrix where each element is a weight matrix
 def getWeightMatrix(mlp):
   matrix=[]
+  np_matrix=[]
   for i in mlp.coefs_:
-    #print("COEFS IS: ", (np.matrix(i)).tolist())
+    print("COEFS IS: ", (np.matrix(i)))
+    np_matrix.append(np.matrix(i))
     matrix.append((np.matrix(i)).tolist())
+
+  #Can save matrix data information to files here
+  #np.savez('/tmp/f1.npz',matrix=np_matrix,matrix_id=MATRIX_ID)
+ 
+  #data = np.load('/tmp/f1.npz')
+  #print("DATAFILE ID IS :", data['matrix_id'])
+  #print("DATAFILE IS    :", data['matrix'])
   return matrix
 
 # Using a FITTED MLP

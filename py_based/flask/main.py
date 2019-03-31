@@ -6,7 +6,7 @@
 #
 # Import json class for type conversion
 import json
-
+import numpy as np
 # Import flask class 'Flask'
 from flask import Flask
 # Import render class for rendering data to the frontend
@@ -57,7 +57,7 @@ def init():
     print("[MAIN] Sending weight matrix as response")
 
     time.sleep(0.5)
-    print("[MAIN] Waited 2s")
+    print("[MAIN] Waited 0.5s")
   
     use_nn = True
 
@@ -80,12 +80,17 @@ def init():
       # print("[MAIN] MATRIX IS ", matrix)
     else:
       matrix = nn.getRandWeightMatrix(_hidden_layer_sizes=(10,10)) #can pass in hidden layer sizes to this as needed
+      matrix_id = nn.MATRIX_ID
+      nn.MATRIX_ID = nn.MATRIX_ID + 1
       matrix_count = len(matrix)
       # DBG
-      # print("[MAIN] NEW MATRIX IS", matrix)
+      #print("[MAIN] ", matrix_id)
+
+    #TODO Store Matrix to a file with ID
+    #np.savetxt('MATRIX_DATA.dat',matrix)
 
     # Send the weight matrices over, dynamic matrix count supported
-    ack = {"status": 1, "matrix_count": matrix_count, "matrix": matrix}    
+    ack = {"status": 1, "matrix_count": matrix_count, "matrix": matrix, "matrix_id": matrix_id}
     # Make response
     return make_response(json.dumps(ack), 200)
 
@@ -96,5 +101,7 @@ def ret():
     award_score = json.loads(request.get_data())
 
     print("[MAIN] Got award score", award_score)
+    #TODO Add score to file corresponding to ID
+    
 
     return make_response(json.dumps(""), 200)

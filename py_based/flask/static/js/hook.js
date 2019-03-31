@@ -14,6 +14,7 @@ var TIMEOUT = 25;
 
 var GLOBAL_MATRIX_COUNT = -1;
 var GLOBAL_MATRIX = [];
+var GLOBAL_MATRIX_ID = -1;
 
 var GLOBAL_INIT = 0;
 var GLOBAL_RUN = 0;
@@ -127,6 +128,7 @@ var AJAXCall_initReq = function(data) {
           GLOBAL_MATRIX_COUNT = ack["matrix_count"]; 
           GLOBAL_MATRIX = ack["matrix"];
           GLOBAL_INIT = ack["status"];
+          GLOBAL_MATRIX_ID   = ack["matrix_id"]
       }
   });
 
@@ -147,7 +149,7 @@ var AJAXCall_retAwardScore = function(data) {
           alert(XMLHttpRequest.readyState)
           alert(textStatus)
       },
-      success:  function(data) {
+      success:  function(data) { //TODO RETRUN ID HERE?
       }
   });
 
@@ -406,14 +408,13 @@ GameState.prototype.update = function() {
         var weight_3 = 350 * GLOBAL_TIMEDIFF;
         
         // DBG
-        console.log("weight 1 : " + weight_1);
-        console.log("weight 2 : " + weight_2);
-        console.log("weight 2 f1 : " + weight_2_f1);
-        console.log("weight 2 f2 : " + weight_2_f2);
-        console.log("weight 3 : " + weight_3);
-
+        //console.log("weight 1 : " + weight_1);
+        //console.log("weight 2 : " + weight_2);
+        //console.log("weight 2 f1 : " + weight_2_f1);
+        //console.log("weight 2 f2 : " + weight_2_f2);
+        //console.log("weight 3 : " + weight_3);
         var rewardScore = weight_1 + weight_2 + weight_3;
-
+        console.log("ID:"+GLOBAL_MATRIX_ID+" SCORE:"+rewardScore);
         // POST award score to MAIN
         AJAXCall_retAwardScore(rewardScore);
     }
