@@ -17,6 +17,13 @@ MAX_DIST = 402.0
 MIN_VEL = 0.0
 MAX_VEL = 200.0
 
+CURRENT_GENERATION = 1
+CURRENT_MATRIX = []
+MAX_POPULATION = 100
+# This Global Array will have MAX_POPULATION number of elements
+# Each Element is a tuple of [ weightmatrix set, reward score]
+GLOBAL_POP_ARRAY = []
+
 #### X Inputs will be array of values (y-coordinate, velocity) ###################################
 #
 # [distance]            coordinates in hook.js games ranges from 0.0 (ceiling) to 402.0 (ground)

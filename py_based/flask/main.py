@@ -7,6 +7,7 @@
 # Import json class for type conversion
 import json
 import numpy as np
+import copy
 # Import flask class 'Flask'
 from flask import Flask
 # Import render class for rendering data to the frontend
@@ -80,6 +81,7 @@ def init():
       # print("[MAIN] MATRIX IS ", matrix)
     else:
       matrix = nn.getRandWeightMatrix(_hidden_layer_sizes=(10,10)) #can pass in hidden layer sizes to this as needed
+      nn.CURRENT_MATRIX = matrix['np_matrix'];
       matrix_id = nn.MATRIX_ID
       nn.MATRIX_ID = nn.MATRIX_ID + 1
       matrix_count = len(matrix)
@@ -100,7 +102,10 @@ def ret():
     # Parse POST packet and get award score
     award_score = json.loads(request.get_data())
 
-    print("[MAIN] Got award score", award_score)
+    print("[MAIN][",nn.MATRIX_ID,"] Got award score", award_score)
+    nn.GLOBAL_POP_ARRAY.append( copy.deepcopy({"award_score": award_score, "matrix": nn.CURRENT_MATRIX}))
+
+    print(nn.GLOBAL_POP_ARRAY[nn.MATRIX_ID-1])
     #TODO Add score to file corresponding to ID
     #data = np.load('/tmp/f1.npz')
     #np.savez('/tmp/f1.npz',matrix=data['matrix'],matrix_id=data['matrix_id'],award_score=award_score)
@@ -108,6 +113,8 @@ def ret():
     #print("[MAIN] DATAFILE ID IS :", data['matrix_id'])
     #print("[MAIN] DATAFILE ID AWARD :", data['award_score'])
     #print("[MAIN] DATAFILE IS    :", data['matrix'])
-
+    if nn.MATRIX_ID - 1 == 10:
+        print("[MAIN] Current Generation[",nn.CURRENT_GENERATION,"] is Finished")
+        print(nn.GLOBAL_POP_ARRAY)
 
     return make_response(json.dumps(""), 200)
