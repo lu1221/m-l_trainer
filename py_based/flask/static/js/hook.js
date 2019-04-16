@@ -177,6 +177,7 @@ GameState.prototype.preload = function() {
 GameState.prototype.create = function() {
     // Enable FPS counter
     this.game.time.advancedTiming = true;
+    // this.game.time.desiredFps = 10;
 
     // Set stage background color
     this.game.stage.backgroundColor = 0x333333;
@@ -191,6 +192,11 @@ GameState.prototype.create = function() {
     this.MAX_SPEED = 250; // pixels/second
     this.DRAG = 0; // pixels/second
     this.GRAVITY = 50; // pixels/second/second
+
+    this.ACCELERATION = this.ACCELERATION * 10; 
+    this.MAX_SPEED = this.MAX_SPEED * 10; 
+    this.DRAG = 0; 
+    this.GRAVITY = this.GRAVITY * 10; 
 
     // Add the ship to the stage
     this.ship = this.game.add.sprite(0, 0, 'ship');

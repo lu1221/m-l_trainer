@@ -86,7 +86,7 @@ def init():
       nn.MATRIX_ID = nn.MATRIX_ID + 1
       matrix_count = len(matrix)
       # DBG
-      #print("[MAIN] ", matrix_id)
+      print("[MAIN] ", matrix_id)
 
     #TODO Store Matrix to a file with ID
     #np.savetxt('MATRIX_DATA.dat',matrix)
