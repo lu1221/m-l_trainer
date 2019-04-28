@@ -59,27 +59,13 @@ def init():
 
     time.sleep(0.5)
     print("[MAIN] Waited 0.5s")
-  
-    use_nn = True
+    if nn.MATRIX_ID > nn.MAX_POPULATION : 
+      print("[MAIN] FINISHED CURRENT GENERATION!")
+      nn.CURRENT_GENERATION += 1
+      nn.MATRIX_ID = 0
+      nn.createNewGeneration()
 
-    if use_nn == False:
-      # Prepare weight matrix
-      # DBG (usage sample)
-      # The weight matrix(s) is(are) in the format of [matrixcount, matrix1, matrix2, ..]
-      matrix_count = 3
-      # matrix 1 -> 2x5 matrix (2 rows x 5 cols)
-      matrix1 = [[1, 1, 1, 1, 1], [0, 0, 0, 0, 0]]
-      # matrix 2 -> 5x5 matrix
-      matrix2 = [[1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1]]
-      # matrix 3 -> 5x1 matrix
-      matrix3 = [[1], [2], [3], [4], [5]]
-      matrix  = []
-      matrix.append(matrix1)
-      matrix.append(matrix2)
-      matrix.append(matrix3)
-      # DBG
-      # print("[MAIN] MATRIX IS ", matrix)
-    else:
+    if nn.CURRENT_GENERATION == 1 :
       matrix = nn.getRandWeightMatrix(_hidden_layer_sizes=(10,10)) #can pass in hidden layer sizes to this as needed
       nn.CURRENT_MATRIX = matrix['np_matrix'];
       nn.CURRENT_BIAS_MATRIX = matrix['np_bias'];
@@ -88,6 +74,21 @@ def init():
       matrix_count = len(matrix['np_matrix'])
       # DBG
       print("[MAIN] ", matrix_id)
+    else :
+      matrix_id = nn.MATRIX_ID
+      nn.MATRIX_ID = nn.MATRIX_ID + 1
+      matrix = dict()
+      matrix['matrix_formatted'] = []
+      matrix['bias_formatted']=[]
+      matrix_count = len(nn.GLOBAL_POP_ARRAY[nn.MATRIX_ID]['matrix'])
+      for i in nn.GLOBAL_POP_ARRAY[nn.MATRIX_ID]['matrix']:
+        matrix['matrix_formatted'].append((np.matrix(i)).tolist())
+      for i in nn.GLOBAL_POP_ARRAY[nn.MATRIX_ID]['bias']:
+        matrix['bias_formatted'].append((np.matrix(i)).tolist())
+
+
+      
+      
 
     #TODO Store Matrix to a file with ID
     #np.savetxt('MATRIX_DATA.dat',matrix)

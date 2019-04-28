@@ -21,9 +21,9 @@ CURRENT_GENERATION = 1
 CURRENT_MATRIX = []
 CURRENT_BIAS_MATRIX = []
 
-MAX_POPULATION = 100
+MAX_POPULATION = 20
 # This Global Array will have MAX_POPULATION number of elements
-# Each Element is a tuple of [ weightmatrix set, reward score]
+# Each Element is a tuple of [ weightmatrix set, reward score, bias values]
 GLOBAL_POP_ARRAY = []
 
 #### X Inputs will be array of values (y-coordinate, velocity) ###################################
@@ -34,6 +34,36 @@ GLOBAL_POP_ARRAY = []
 # [boost]        binary output 1=boost, 0=no action
 ##################################################################################################
 
+
+# Create MAX_POPULATION number of new weight matrices based on previous generation 
+# Clear and insert the new set of MAX_POPULATION data into the GLOBAL_POP_ARRAY
+def createNewGeneration():
+
+  filterCurrentGeneration()
+
+  crossCurrentGeneration()
+
+  mutateCurrentGeneration()
+
+  return
+
+# Parse through the GLOBAL_POP_ARRAY and remove the weak performers of this generation
+# based on the reward scores earned. 
+def filterCurrentGeneration():
+
+  return
+
+# Use the best performers of current generation in GLOBAL_POP_ARRAY to regenerate MAX_POPULATION 
+def crossCurrentGeneration():
+
+  return
+
+# Randomly do some mutations in current generation 
+def mutateCurrentGeneration():
+  
+  return
+
+# Initialize randomized weight matrices for the first generation
 def getRandWeightMatrix(_hidden_layer_sizes=(5,5)):
   matrix = []
   mlp = initRandNN(_hidden_layer_sizes)
@@ -121,14 +151,6 @@ def getWeightMatrix(mlp):
     #print("COEFS IS: ", (np.matrix(i)))
     np_matrix.append(np.matrix(i))
     matrix.append((np.matrix(i)).tolist())
-
-  #Can save matrix data information to files here
-  #np.savez('/tmp/f1.npz',matrix=np_matrix,matrix_id=MATRIX_ID,award_score=-1)
- 
-  #data = np.load('/tmp/f1.npz')
-  #print("DATAFILE ID IS :", data['matrix_id'])
-  #print("DATAFILE ID AWARD :", data['award_score'])
-  #print("DATAFILE IS    :", data['matrix'])
   return { "matrix_formatted" : matrix, "np_matrix" : np_matrix}
 
 #return a matrix where each element is a bias values matrix for each layer
