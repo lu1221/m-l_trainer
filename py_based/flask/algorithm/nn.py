@@ -4,6 +4,7 @@ import numpy as np
 import random
 from datetime import datetime
 import re
+import copy
 
 random.seed(datetime.now())
 NUM_FEATURES = 2
@@ -44,7 +45,7 @@ MAX_AWARD_THRESHOLD = 150000
 def createNewGeneration():
 
   #TODO Uncomment once other functions are completed
-  #filterCurrentGeneration()
+  filterCurrentGeneration()
   #TODO
   crossCurrentGeneration()
   #TODO
@@ -54,6 +55,8 @@ def createNewGeneration():
 
 # Parse through the GLOBAL_POP_ARRAY and remove the weak performers of this generation
 # based on the reward scores earned. 
+# TODO what to do if ALL Items in population are removed 
+# TODO what to od if NO Items in the population are removed
 def filterCurrentGeneration():
   index = 0
   kill_indices = []
@@ -68,7 +71,13 @@ def filterCurrentGeneration():
 
 # Use the best performers of current generation in GLOBAL_POP_ARRAY to regenerate MAX_POPULATION 
 def crossCurrentGeneration():
-
+  print(GLOBAL_POP_ARRAY)
+  pop_array_len = len(GLOBAL_POP_ARRAY)
+  print(pop_array_len)
+  while(len(GLOBAL_POP_ARRAY) != MAX_POPULATION):
+    # TODO Need to try other methods to generate new weightMatrices besides getMeanNN
+    newWeightMatrix = getMeanNN(GLOBAL_POP_ARRAY[random.randint(0,pop_array_len-1)]['matrix'], GLOBAL_POP_ARRAY[random.randint(0,pop_array_len-1)]['matrix'])
+    GLOBAL_POP_ARRAY.append(copy.deepcopy({"award_score": -1, "matrix": newWeightMatrix, "bias":[[0]]}))
   return
 
 # Randomly do some mutations in current generation 
