@@ -7,7 +7,7 @@ import re
 
 random.seed(datetime.now())
 NUM_FEATURES = 2
-NUM_TRAIN_SETS = 100000
+NUM_TRAIN_SETS = 10000
 PRECISION = 4 #Number of decimal places for precision
 
 MATRIX_ID = 0
@@ -19,6 +19,8 @@ MAX_VEL = 200.0
 
 CURRENT_GENERATION = 1
 CURRENT_MATRIX = []
+CURRENT_BIAS_MATRIX = []
+
 MAX_POPULATION = 100
 # This Global Array will have MAX_POPULATION number of elements
 # Each Element is a tuple of [ weightmatrix set, reward score]
@@ -43,7 +45,15 @@ def getRandWeightMatrix(_hidden_layer_sizes=(5,5)):
   #printNNInfo(mlp)
  
   weightMatrix = getWeightMatrix(mlp)
-  #print("[MATRIX IS]:\n", weightMatrix['np_matrix'])
+
+  #Add bias matrix
+  biasMatrix = getBiasMatrix(mlp)
+  weightMatrix['bias_formatted']=biasMatrix['bias_formatted']
+  weightMatrix['np_bias']=biasMatrix['np_bias']
+
+  #print("[WEIGHT MATRIX IS]:\n", weightMatrix['np_matrix'])
+  #print("[BIAS MATRIX IS]:\n", biasMatrix['np_matrix'])
+  
   
   #Testing MLP Here to check outputs
   num_test_samples = random.randint(100,150)
@@ -52,6 +62,7 @@ def getRandWeightMatrix(_hidden_layer_sizes=(5,5)):
   test_samples = np.append(rndm_dist, rndm_vel, axis=1)
   #print(test_samples)
   print(mlp.predict(test_samples))
+  #print (weightMatrix)
   return weightMatrix
 
 # Setup a randomized neural network with 2 hidden layers of size 5,5
@@ -98,6 +109,8 @@ def printNNInfo(mlp):
   print(mlp.intercepts_[0])
   print("\nBias values for second hidden layer:")
   print(mlp.intercepts_[1])
+  print("\nBias values for third hidden layer:")
+  print(mlp.intercepts_[2])
   print("*******************************************************")
 
 #return a matrix where each element is a weight matrix
@@ -117,6 +130,18 @@ def getWeightMatrix(mlp):
   #print("DATAFILE ID AWARD :", data['award_score'])
   #print("DATAFILE IS    :", data['matrix'])
   return { "matrix_formatted" : matrix, "np_matrix" : np_matrix}
+
+#return a matrix where each element is a bias values matrix for each layer
+def getBiasMatrix(mlp):
+  intercepts=[]
+  np_intercepts=[]
+  for i in mlp.intercepts_:
+    #print("BIAS MATRIX IS: ", (np.matrix(i)))
+    np_intercepts.append(np.matrix(i))
+    intercepts.append((np.matrix(i)).tolist())
+  return { "bias_formatted" : intercepts, "np_bias" : np_intercepts}
+  
+
 
 # Using a FITTED MLP
 # Returns prediction matrix with 2 columns (dist, vel) for all values where output boost = 1
@@ -192,8 +217,8 @@ if local_trial == True:
   w2 = weights2['np_matrix']
   
   
-  print(w1)
-  print(w2)
+  #print(w1)
+  #print(w2)
   #print(len(w1['np_matrix']))
   #for i in range(0,len(w1['np_matrix'])):
   #  print(i)

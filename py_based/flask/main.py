@@ -82,9 +82,10 @@ def init():
     else:
       matrix = nn.getRandWeightMatrix(_hidden_layer_sizes=(10,10)) #can pass in hidden layer sizes to this as needed
       nn.CURRENT_MATRIX = matrix['np_matrix'];
+      nn.CURRENT_BIAS_MATRIX = matrix['np_bias'];
       matrix_id = nn.MATRIX_ID
       nn.MATRIX_ID = nn.MATRIX_ID + 1
-      matrix_count = len(matrix)
+      matrix_count = len(matrix['np_matrix'])
       # DBG
       print("[MAIN] ", matrix_id)
 
@@ -92,7 +93,11 @@ def init():
     #np.savetxt('MATRIX_DATA.dat',matrix)
 
     # Send the weight matrices over, dynamic matrix count supported
-    ack = {"status": 1, "matrix_count": matrix_count, "matrix": matrix['matrix_formatted'], "matrix_id": matrix_id}
+    ack = { "status": 1, 
+            "matrix_count": matrix_count, 
+            "matrix": matrix['matrix_formatted'], 
+            "matrix_id": matrix_id,
+            "bias": matrix['bias_formatted']}
     # Make response
     return make_response(json.dumps(ack), 200)
 
@@ -103,16 +108,9 @@ def ret():
     award_score = json.loads(request.get_data())
 
     print("[MAIN][",nn.MATRIX_ID,"] Got award score", award_score)
-    nn.GLOBAL_POP_ARRAY.append( copy.deepcopy({"award_score": award_score, "matrix": nn.CURRENT_MATRIX}))
+    nn.GLOBAL_POP_ARRAY.append( copy.deepcopy({"award_score": award_score, "matrix": nn.CURRENT_MATRIX, "bias":nn.CURRENT_BIAS_MATRIX}))
 
     print(nn.GLOBAL_POP_ARRAY[nn.MATRIX_ID-1])
-    #TODO Add score to file corresponding to ID
-    #data = np.load('/tmp/f1.npz')
-    #np.savez('/tmp/f1.npz',matrix=data['matrix'],matrix_id=data['matrix_id'],award_score=award_score)
-    #data = np.load('/tmp/f1.npz')
-    #print("[MAIN] DATAFILE ID IS :", data['matrix_id'])
-    #print("[MAIN] DATAFILE ID AWARD :", data['award_score'])
-    #print("[MAIN] DATAFILE IS    :", data['matrix'])
     if nn.MATRIX_ID - 1 == 10:
         print("[MAIN] Current Generation[",nn.CURRENT_GENERATION,"] is Finished")
         print(nn.GLOBAL_POP_ARRAY)
