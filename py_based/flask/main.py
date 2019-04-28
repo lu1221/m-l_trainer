@@ -59,7 +59,7 @@ def init():
 
     time.sleep(0.5)
     print("[MAIN] Waited 0.5s")
-    if nn.MATRIX_ID > nn.MAX_POPULATION : 
+    if nn.MATRIX_ID >= nn.MAX_POPULATION : 
       print("[MAIN] FINISHED CURRENT GENERATION!")
       nn.CURRENT_GENERATION += 1
       nn.MATRIX_ID = 0
@@ -80,11 +80,12 @@ def init():
       matrix = dict()
       matrix['matrix_formatted'] = []
       matrix['bias_formatted']=[]
-      matrix_count = len(nn.GLOBAL_POP_ARRAY[nn.MATRIX_ID]['matrix'])
-      for i in nn.GLOBAL_POP_ARRAY[nn.MATRIX_ID]['matrix']:
+      matrix_count = len(nn.GLOBAL_POP_ARRAY[matrix_id]['matrix'])
+      for i in nn.GLOBAL_POP_ARRAY[matrix_id]['matrix']:
         matrix['matrix_formatted'].append((np.matrix(i)).tolist())
-      for i in nn.GLOBAL_POP_ARRAY[nn.MATRIX_ID]['bias']:
+      for i in nn.GLOBAL_POP_ARRAY[matrix_id]['bias']:
         matrix['bias_formatted'].append((np.matrix(i)).tolist())
+      print("[MAIN] ", matrix_id)
 
 
       
@@ -108,11 +109,16 @@ def ret():
     # Parse POST packet and get award score
     award_score = json.loads(request.get_data())
 
-    print("[MAIN][",nn.MATRIX_ID,"] Got award score", award_score)
-    nn.GLOBAL_POP_ARRAY.append( copy.deepcopy({"award_score": award_score, "matrix": nn.CURRENT_MATRIX, "bias":nn.CURRENT_BIAS_MATRIX}))
+    print("[MAIN][",nn.MATRIX_ID-1,"] Got award score", award_score)
+    if nn.CURRENT_GENERATION == 1 :
+      nn.GLOBAL_POP_ARRAY.append( copy.deepcopy({"award_score": award_score, "matrix": nn.CURRENT_MATRIX, "bias":nn.CURRENT_BIAS_MATRIX}))
+    else:
+       # For subsequent generations we already have the matrix data in the GLOBAL_POP_ARRAY, 
+       # just need to update the award_scores
+       nn.GLOBAL_POP_ARRAY[nn.MATRIX_ID-1]['award_score'] = award_score
 
     print(nn.GLOBAL_POP_ARRAY[nn.MATRIX_ID-1])
-    if nn.MATRIX_ID - 1 == 10:
+    if nn.MATRIX_ID - 1 == nn.MAX_POPULATION - 1:
         print("[MAIN] Current Generation[",nn.CURRENT_GENERATION,"] is Finished")
         print(nn.GLOBAL_POP_ARRAY)
 
