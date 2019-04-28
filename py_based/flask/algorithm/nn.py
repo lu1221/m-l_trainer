@@ -26,6 +26,10 @@ MAX_POPULATION = 20
 # Each Element is a tuple of [ weightmatrix set, reward score, bias values]
 GLOBAL_POP_ARRAY = []
 
+# Maximum award_score allowed, items above this award score will be filtered out for next generation
+# TODO Maybe we should reduce this number after every generation
+MAX_AWARD_THRESHOLD = 150000
+
 #### X Inputs will be array of values (y-coordinate, velocity) ###################################
 #
 # [distance]            coordinates in hook.js games ranges from 0.0 (ceiling) to 402.0 (ground)
@@ -39,10 +43,11 @@ GLOBAL_POP_ARRAY = []
 # Clear and insert the new set of MAX_POPULATION data into the GLOBAL_POP_ARRAY
 def createNewGeneration():
 
-  filterCurrentGeneration()
-
+  #TODO Uncomment once other functions are completed
+  #filterCurrentGeneration()
+  #TODO
   crossCurrentGeneration()
-
+  #TODO
   mutateCurrentGeneration()
 
   return
@@ -50,7 +55,15 @@ def createNewGeneration():
 # Parse through the GLOBAL_POP_ARRAY and remove the weak performers of this generation
 # based on the reward scores earned. 
 def filterCurrentGeneration():
-
+  index = 0
+  kill_indices = []
+  for i in GLOBAL_POP_ARRAY:
+    if i['award_score'] > MAX_AWARD_THRESHOLD : 
+      kill_indices.append(index)
+    index += 1
+  print("KILLINDICES:",kill_indices)
+  for i in sorted(kill_indices, reverse=True):
+    del GLOBAL_POP_ARRAY[i]
   return
 
 # Use the best performers of current generation in GLOBAL_POP_ARRAY to regenerate MAX_POPULATION 
@@ -62,6 +75,16 @@ def crossCurrentGeneration():
 def mutateCurrentGeneration():
   
   return
+
+# Get average reward score of current GLOBAL_POP_ARRAY
+def getAverageRewardScore():
+  sum_score = 0
+  pop_size = 0
+  for i in GLOBAL_POP_ARRAY:
+    sum_score += i['award_score']
+    pop_size += 1
+  return sum_score/pop_size
+
 
 # Initialize randomized weight matrices for the first generation
 def getRandWeightMatrix(_hidden_layer_sizes=(5,5)):

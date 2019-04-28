@@ -61,6 +61,7 @@ def init():
     print("[MAIN] Waited 0.5s")
     if nn.MATRIX_ID >= nn.MAX_POPULATION : 
       print("[MAIN] FINISHED CURRENT GENERATION!")
+      print("[MAIN] AVERAGE AWARDS SCORE FOR CURRENT GENERATION IS:", nn.getAverageRewardScore())
       nn.CURRENT_GENERATION += 1
       nn.MATRIX_ID = 0
       nn.createNewGeneration()
